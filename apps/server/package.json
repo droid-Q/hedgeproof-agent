@@ -1,0 +1,10 @@
+{
+  "name": "@hedgeproof/server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "cargo run --manifest-path Cargo.toml",
+    "test": "cargo test --manifest-path Cargo.toml",
+    "build": "cargo build --manifest-path Cargo.toml"
+  }
+}

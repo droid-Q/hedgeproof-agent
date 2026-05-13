@@ -1,0 +1,18 @@
+{
+  "name": "hedgeproof-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agentic RWA hedge quote desk for Arbitrum and Robinhood Chain buildathon demos.",
+  "scripts": {
+    "dev": "concurrently -n server,web \"pnpm dev:server\" \"pnpm dev:web\"",
+    "dev:web": "pnpm --filter @hedgeproof/web dev",
+    "dev:server": "pnpm --filter @hedgeproof/server dev",
+    "build": "pnpm --filter @hedgeproof/web build && pnpm --filter @hedgeproof/contracts compile && cargo build --manifest-path apps/server/Cargo.toml",
+    "test": "cargo test --manifest-path apps/server/Cargo.toml && pnpm --filter @hedgeproof/contracts test",
+    "smoke": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "concurrently": "^9.2.1"
+  }
+}

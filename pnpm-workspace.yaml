@@ -1,0 +1,7 @@
+packages:
+  - "apps/web"
+  - "apps/server"
+  - "packages/contracts"
+allowBuilds:
+  esbuild: true
+  keccak: true

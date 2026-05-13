@@ -1,0 +1,17 @@
+{
+  "name": "@hedgeproof/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy:arbitrum-sepolia": "hardhat run scripts/deploy.cjs --network arbitrumSepolia",
+    "deploy:robinhood-testnet": "hardhat run scripts/deploy.cjs --network robinhoodTestnet",
+    "test": "hardhat test"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.8",
+    "chai": "^4.5.0",
+    "ethers": "^6.13.4",
+    "hardhat": "^2.22.19"
+  }
+}
