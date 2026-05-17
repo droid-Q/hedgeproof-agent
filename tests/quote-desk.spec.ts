@@ -10,6 +10,7 @@ test('generates a crypto drawdown quote and renders receipt args', async ({ page
   await expect(page.locator('.market-table')).toContainText('ETH trades below key support')
   await expect(page.getByRole('heading', { name: 'On-chain receipt' })).toBeVisible()
   await expect(page.locator('pre')).toContainText('quoteHash')
+  await expect(page.getByText('0x3a09bc9e')).toBeVisible()
 
   await page.getByRole('button', { name: 'Positions' }).click()
   await expect(page.getByRole('heading', { name: 'Exposure inventory' })).toBeVisible()

@@ -2,6 +2,7 @@ use crate::models::{
     DemoScenario, HedgeLeg, MarketMatch, QuoteRequest, QuoteResponse, ReceiptPayload,
     SolidityReceiptArgs,
 };
+use crate::solidity;
 use chrono::{Duration, Utc};
 use sha2::{Digest, Sha256};
 use std::env;
@@ -76,6 +77,19 @@ pub fn build_quote(request: QuoteRequest) -> QuoteResponse {
     let quote_id_bytes32 = hash_hex(&quote_id);
     let budget_ceiling_usd = hedge_budget.ceil() as u64;
 
+    let contract_address = env::var("QUOTE_RECEIPT_CONTRACT_ADDRESS").ok().filter(|v| !v.is_empty());
+    let solidity_args = SolidityReceiptArgs {
+        quote_id: format!("0x{quote_id_bytes32}"),
+        quote_hash: format!("0x{quote_hash}"),
+        summary_hash: format!("0x{summary_hash}"),
+        expires_at_unix: expires_at.timestamp(),
+        budget_ceiling_usd,
+        risk_tag: risk_tag.clone(),
+        chain_hint: chain_hint.clone(),
+    };
+    let contract_call = solidity::build_create_receipt_call(&solidity_args, contract_address.clone())
+        .expect("generated receipt args must ABI-encode");
+
     let receipt = ReceiptPayload {
         quote_hash: format!("0x{quote_hash}"),
         summary_hash: format!("0x{summary_hash}"),
@@ -83,17 +97,10 @@ pub fn build_quote(request: QuoteRequest) -> QuoteResponse {
         budget_ceiling_usd,
         risk_tag: risk_tag.clone(),
         chain_hint: chain_hint.clone(),
-        contract_address: env::var("QUOTE_RECEIPT_CONTRACT_ADDRESS").ok().filter(|v| !v.is_empty()),
+        contract_address,
         tx_hash: None,
-        solidity_args: SolidityReceiptArgs {
-            quote_id: format!("0x{quote_id_bytes32}"),
-            quote_hash: format!("0x{quote_hash}"),
-            summary_hash: format!("0x{summary_hash}"),
-            expires_at_unix: expires_at.timestamp(),
-            budget_ceiling_usd,
-            risk_tag: risk_tag.clone(),
-            chain_hint,
-        },
+        solidity_args,
+        contract_call,
     };
 
     QuoteResponse {
@@ -278,6 +285,9 @@ mod tests {
         assert!(quote.protection_band_usd > 0.0);
         assert!(quote.receipt.quote_hash.starts_with("0x"));
         assert_eq!(quote.receipt.solidity_args.quote_hash, quote.receipt.quote_hash);
+        assert_eq!(quote.receipt.contract_call.contract_name, "QuoteReceiptRegistry");
+        assert_eq!(quote.receipt.contract_call.method_id, "0x3a09bc9e");
+        assert!(quote.receipt.contract_call.calldata.starts_with("0x3a09bc9e"));
     }
 
     #[test]

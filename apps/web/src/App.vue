@@ -62,6 +62,15 @@ type ReceiptPayload = {
     riskTag: string
     chainHint: string
   }
+  contractCall: {
+    contractName: string
+    functionSignature: string
+    methodId: string
+    calldata: string
+    to?: string | null
+    valueWei: string
+    chainId?: number | null
+  }
 }
 
 type QuoteResponse = {
@@ -104,7 +113,19 @@ const receiptPreview = computed(() => {
   if (!quote.value) {
     return ''
   }
-  return JSON.stringify(quote.value.receipt.solidityArgs, null, 2)
+  return JSON.stringify(
+    {
+      quoteId: quote.value.receipt.solidityArgs.quoteId,
+      quoteHash: quote.value.receipt.quoteHash,
+      summaryHash: quote.value.receipt.summaryHash,
+      expiresAt: quote.value.receipt.expiresAt,
+      budgetCeilingUsd: quote.value.receipt.budgetCeilingUsd,
+      riskTag: quote.value.receipt.riskTag,
+      chainHint: quote.value.receipt.chainHint,
+    },
+    null,
+    2,
+  )
 })
 
 const confidencePercent = computed(() => Math.round((quote.value?.confidence ?? 0) * 100))
@@ -547,7 +568,7 @@ onMounted(async () => {
                 <FileCheck2 :size="19" />
                 <div>
                   <h2>On-chain receipt</h2>
-                  <p>Payload for `QuoteReceiptRegistry`.</p>
+                  <p>Readable payload for `QuoteReceiptRegistry`.</p>
                 </div>
               </div>
 
@@ -563,6 +584,10 @@ onMounted(async () => {
                 <div>
                   <dt>Budget ceiling</dt>
                   <dd>{{ formatUsd(quote.receipt.budgetCeilingUsd) }}</dd>
+                </div>
+                <div>
+                  <dt>Method</dt>
+                  <dd>{{ quote.receipt.contractCall.methodId }}</dd>
                 </div>
               </dl>
 

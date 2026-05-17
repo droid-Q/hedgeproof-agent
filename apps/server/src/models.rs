@@ -60,6 +60,7 @@ pub struct ReceiptPayload {
     pub contract_address: Option<String>,
     pub tx_hash: Option<String>,
     pub solidity_args: SolidityReceiptArgs,
+    pub contract_call: ContractCallPayload,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -72,6 +73,18 @@ pub struct SolidityReceiptArgs {
     pub budget_ceiling_usd: u64,
     pub risk_tag: String,
     pub chain_hint: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct ContractCallPayload {
+    pub contract_name: String,
+    pub function_signature: String,
+    pub method_id: String,
+    pub calldata: String,
+    pub to: Option<String>,
+    pub value_wei: String,
+    pub chain_id: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize)]

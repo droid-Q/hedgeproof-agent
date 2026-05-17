@@ -1,5 +1,6 @@
 mod agent;
 mod models;
+mod solidity;
 
 use axum::{
     http::Method,
